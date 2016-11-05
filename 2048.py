@@ -1,7 +1,5 @@
 import random
 
-import random
-
 ##### 2048 algorithm ##########
 def lineSolve(li):
 	global SCORE
