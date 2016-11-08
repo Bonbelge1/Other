@@ -13,9 +13,9 @@ class Being:
 		self.name = 'default_name'
 		self.color = 'BLUE'
 		self.weight = 20
-		self.pos = (50, 80)
+		self.pos = (random.randrange(30,600), random.randrange(30,400))
 		self.reproLimit = 30
-		self.vect = (random.randrange(10), random.randrange(10)) 
+		self.vect = (random.randrange(-3, 3), random.randrange(-3, 3)) 
 		Being.beingCreated += 1
 
 # Class for ground tiles
@@ -25,20 +25,17 @@ class Tiles:
 		self.food = 20
 		self.growing = 1
 
-# Window information
-info = pygame.display.Info()
-sw = info.current_w
-sh = info.current_h
-		
 # Function for self-reproduction
 def repro(listBeing):
 	for i in range(len(listBeing)):
 		print(listBeing[i].weight)
    
- def main():
-	
- 	# Game clock
-	pygame.time.delay(100) 
+def main():
+
+ 	# Window information
+	# info = pygame.display.Info()
+	# sw = info.current_w
+	# sh = info.current_h
 	
 	# Colors
 	BLACK = (0, 0, 0)
@@ -49,12 +46,11 @@ def repro(listBeing):
 	
 	# Creation of the first generation
 	gen = [Being() for i in range(10)]
-	#print(repro(gen))
 
 	# Creation of the window
 	pygame.init()
 	window = pygame.display.set_mode((640, 480))
-	windowSurface.fill(WHITE)
+	
 	pygame.display.set_caption("Pygame Test")
 
 	# Surface
@@ -62,18 +58,22 @@ def repro(listBeing):
 
 	# Infinite loop
 	while True:
-		windowSurface.fill(WHITE)
+		
 		for i in range(len(gen)):
 			pygame.draw.circle(DISPLAYSURF, BLUE, gen[i].pos, gen[i].weight)
-			gen[i].pos = ((gen[i].pos[0] + gen[i].vect[0]) % sh, (gen[i].pos[1] + gen[i].vect[0]) % sw)
+			gen[i].pos = ((gen[i].pos[0] + gen[i].vect[0]) , (gen[i].pos[1] + gen[i].vect[1]) )
 		
 		# Update the window
 		pygame.display.flip()
+		DISPLAYSURF.fill(BLACK)
+
+		# Game clock
+		pygame.time.delay(100) 
 		
-		for event in pygame.event.get():
-        		if event.type == QUIT:
-            			pygame.quit()
-           			sys.exit()
+	for event in pygame.event.get():
+		if (event.type == QUIT):
+			pygame.quit()
+			sys.exit()
 
 
 if __name__ == '__main__':
