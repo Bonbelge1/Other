@@ -11,11 +11,11 @@ class Being:
 	def __init__(self):
 		self.serialNb = Being.beingCreated 
 		self.name = 'default_name'
-		self.color = 'BLUE'
-		self.weight = 20
+		self.color = (random.randrange(50,255), random.randrange(50,255), random.randrange(50,255))
+		self.weight = 10
 		self.pos = (random.randrange(30,600), random.randrange(30,400))
 		self.reproLimit = 30
-		self.vect = (random.randrange(-3, 3), random.randrange(-3, 3)) 
+		self.vect = [random.randrange(-3, 3), random.randrange(-3, 3)] 
 		Being.beingCreated += 1
 
 # Class for ground tiles
@@ -31,11 +31,6 @@ def repro(listBeing):
 		print(listBeing[i].weight)
    
 def main():
-
- 	# Window information
-	# info = pygame.display.Info()
-	# sw = info.current_w
-	# sh = info.current_h
 	
 	# Colors
 	BLACK = (0, 0, 0)
@@ -49,7 +44,9 @@ def main():
 
 	# Creation of the window
 	pygame.init()
-	window = pygame.display.set_mode((640, 480))
+	screen_width=640
+	screen_height=480
+	window = pygame.display.set_mode((screen_width, screen_height))
 	
 	pygame.display.set_caption("Pygame Test")
 
@@ -60,7 +57,12 @@ def main():
 	while True:
 		
 		for i in range(len(gen)):
-			pygame.draw.circle(DISPLAYSURF, BLUE, gen[i].pos, gen[i].weight)
+			pygame.draw.circle(DISPLAYSURF, gen[i].color, gen[i].pos, gen[i].weight)
+			if not (gen[i].weight <= (gen[i].pos[0] + gen[i].vect[0]) <= screen_width - gen[i].weight):
+				gen[i].vect[0] *= -1
+			if not (gen[i].weight <= (gen[i].pos[1] + gen[i].vect[1]) <= screen_height - gen[i].weight):
+				gen[i].vect[1] *= -1
+
 			gen[i].pos = ((gen[i].pos[0] + gen[i].vect[0]) , (gen[i].pos[1] + gen[i].vect[1]) )
 		
 		# Update the window
@@ -68,7 +70,7 @@ def main():
 		DISPLAYSURF.fill(BLACK)
 
 		# Game clock
-		pygame.time.delay(100) 
+		pygame.time.delay(20) 
 		
 	for event in pygame.event.get():
 		if (event.type == QUIT):
