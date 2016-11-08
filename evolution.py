@@ -1,13 +1,12 @@
 import pygame
 import random
 import time
+import math
 from pygame.locals import *
 
-# Class that define genetic
+# Class for genetic
 class Being:
-
 	beingCreated = 0
-
 	def __init__(self):
 		self.serialNb = Being.beingCreated 
 		self.name = 'default_name'
@@ -15,7 +14,8 @@ class Being:
 		self.weight = 10
 		self.pos = (random.randrange(30,600), random.randrange(30,400))
 		self.reproLimit = 30
-		self.vect = [random.randrange(-3, 3), random.randrange(-3, 3)] 
+		self.speed = random.randrange(3)
+		self.theta = random.randrange(2 * math.pi)
 		Being.beingCreated += 1
 
 # Class for ground tiles
@@ -47,23 +47,34 @@ def main():
 	screen_width=640
 	screen_height=480
 	window = pygame.display.set_mode((screen_width, screen_height))
-	
 	pygame.display.set_caption("Pygame Test")
 
 	# Surface
 	DISPLAYSURF = pygame.display.set_mode()
 
 	# Infinite loop
+	
 	while True:
+		# Draw Tiles
 		
+		
+		
+		
+		
+		# Draw Being
 		for i in range(len(gen)):
 			pygame.draw.circle(DISPLAYSURF, gen[i].color, gen[i].pos, gen[i].weight)
-			if not (gen[i].weight <= (gen[i].pos[0] + gen[i].vect[0]) <= screen_width - gen[i].weight):
-				gen[i].vect[0] *= -1
-			if not (gen[i].weight <= (gen[i].pos[1] + gen[i].vect[1]) <= screen_height - gen[i].weight):
-				gen[i].vect[1] *= -1
+			
+			# Horizontal border verification (x) 
+			if not (gen[i].weight <= (gen[i].pos[0] + gen[i].speed * math.cos(gen[i].theta) <= screen_width - gen[i].weight):
+				gen[i].theta = math.pi - gen[i].theta
+			
+			# Vertical border verification (y)
+			if not (gen[i].weight <= (gen[i].pos[1] + gen[i].speed * math.sin(gen[i].theta) <= screen_height - gen[i].weight):
+				gen[i].theta = 2 * math.pi - gen[i].theta
 
-			gen[i].pos = ((gen[i].pos[0] + gen[i].vect[0]) , (gen[i].pos[1] + gen[i].vect[1]) )
+			# Calculate new position
+			gen[i].pos = ((gen[i].pos[0] + gen[i].speed * math.sin(gen[i].theta) , (gen[i].pos[1] + gen[i].speed * math.cos(gen[i].theta))
 		
 		# Update the window
 		pygame.display.flip()
@@ -71,7 +82,8 @@ def main():
 
 		# Game clock
 		pygame.time.delay(20) 
-		
+	
+	# Keyboard events management				       
 	for event in pygame.event.get():
 		if (event.type == QUIT):
 			pygame.quit()
