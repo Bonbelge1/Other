@@ -1,7 +1,10 @@
 import pygame
 import random
+# from random import randrange, uniform
 import time
+# from time import delay
 import math
+# from math import sin, cos, radian
 from pygame.locals import *
 
 # Class for genetic
@@ -10,7 +13,7 @@ class Being:
 	def __init__(self):
 		self.serialNb = Being.beingCreated 
 		self.name = 'default_name'
-		self.color = (random.randrange(50,255), random.randrange(50,255), random.randrange(50,255))
+		self.color = (random.randrange(0,255), random.randrange(0,50), random.randrange(0,255))
 		self.weight = 10
 		self.pos = (random.randrange(30,600), random.randrange(30,400))
 		self.reproLimit = 30
@@ -21,7 +24,7 @@ class Being:
 # Class for ground tiles
 class Tiles:
 	def __init__(self):
-		self.type = "grass"
+		self.color = (0, 255, 0)
 		self.food = 20
 		self.growing = 1
 
@@ -41,11 +44,16 @@ def main():
 	
 	# Creation of the first generation
 	gen = [Being() for i in range(10)]
+	
+	# Creation of the map
+	map_x = 10
+	map_y = 10
+	gameMap = [[Tiles() for j in range(map_x)] for i in range(map_y)]
 
 	# Creation of the window
 	pygame.init()
-	screen_width = 640
-	screen_height = 480
+	screen_width = 500
+	screen_height = 500
 	window = pygame.display.set_mode((screen_width, screen_height))
 	pygame.display.set_caption("Pygame Test")
 
@@ -56,7 +64,15 @@ def main():
 	
 	while True:
 		# Draw Tiles
-		
+		for i in range(map_y):
+			for j in range(map_x):
+				pygame.draw.rect(DISPLAYSURF, gameMap[i][j].color, (i * screen_width / map_x, j * screen_width / map_x, screen_width / map_x - 2, screen_height / map_y - 2))
+				
+				# Rect
+				# first number = top left rectangle x coordinate
+				# second number = top left rectangle y coordinate
+				# third number = width of rectangle
+				# fourth number = length of rectangle
 		
 		
 		
