@@ -15,7 +15,7 @@ class Being:
 		self.name = 'default_name'
 		self.color = (random.randrange(0,255), random.randrange(0,50), random.randrange(0,255))
 		self.weight = 10
-		self.pos = (random.randrange(30,600), random.randrange(30,400))
+		self.pos = (random.randrange(10,490), random.randrange(10,490))
 		self.reproLimit = 30
 		self.speed = random.uniform(0, 3)
 		self.theta = random.randrange(0, 360)
@@ -65,7 +65,7 @@ def main():
 	while True:
 		# Draw Tiles
 		for i in range(map_y):
-			for j in range(map_x)
+			for j in range(map_x):
 				pygame.draw.rect(DISPLAYSURF, gameMap[i][j].color, (i * screen_width / map_x, j * screen_width / map_x, screen_width / map_x - 2, screen_height / map_y - 2))
 
 				# Rect
