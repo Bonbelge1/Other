@@ -14,8 +14,8 @@ class Being:
 		self.weight = 10
 		self.pos = (random.randrange(30,600), random.randrange(30,400))
 		self.reproLimit = 30
-		self.speed = random.randrange(3)
-		self.theta = random.randrange(2 * math.pi)
+		self.speed = random.uniform(0, 3)
+		self.theta = random.randrange(0, 360)
 		Being.beingCreated += 1
 
 # Class for ground tiles
@@ -44,8 +44,8 @@ def main():
 
 	# Creation of the window
 	pygame.init()
-	screen_width=640
-	screen_height=480
+	screen_width = 640
+	screen_height = 480
 	window = pygame.display.set_mode((screen_width, screen_height))
 	pygame.display.set_caption("Pygame Test")
 
@@ -63,18 +63,19 @@ def main():
 		
 		# Draw Being
 		for i in range(len(gen)):
-			pygame.draw.circle(DISPLAYSURF, gen[i].color, gen[i].pos, gen[i].weight)
+			posTemp = (int(gen[i].pos[0]), int(gen[i].pos[1]))
+			pygame.draw.circle(DISPLAYSURF, gen[i].color, posTemp, gen[i].weight)
 			
 			# Horizontal border verification (x) 
-			if not (gen[i].weight <= (gen[i].pos[0] + gen[i].speed * math.cos(gen[i].theta) <= screen_width - gen[i].weight):
-				gen[i].theta = math.pi - gen[i].theta
+			if not (gen[i].weight <= int(gen[i].pos[0] + gen[i].speed * math.cos(math.radians(gen[i].theta))) <= screen_width - gen[i].weight):
+				gen[i].theta = 180 - gen[i].theta
 			
 			# Vertical border verification (y)
-			if not (gen[i].weight <= (gen[i].pos[1] + gen[i].speed * math.sin(gen[i].theta) <= screen_height - gen[i].weight):
-				gen[i].theta = 2 * math.pi - gen[i].theta
+			if not (gen[i].weight <= int(gen[i].pos[1] + gen[i].speed * math.sin(math.radians(gen[i].theta))) <= screen_height - gen[i].weight):
+				gen[i].theta = 360 - gen[i].theta
 
 			# Calculate new position
-			gen[i].pos = ((gen[i].pos[0] + gen[i].speed * math.sin(gen[i].theta) , (gen[i].pos[1] + gen[i].speed * math.cos(gen[i].theta))
+			gen[i].pos = (gen[i].pos[0] + gen[i].speed * math.cos(math.radians(gen[i].theta)), gen[i].pos[1] + gen[i].speed * math.sin(math.radians(gen[i].theta)))
 		
 		# Update the window
 		pygame.display.flip()
