@@ -65,9 +65,9 @@ def main():
 	while True:
 		# Draw Tiles
 		for i in range(map_y):
-			for j in range(map_x):
+			for j in range(map_x)
 				pygame.draw.rect(DISPLAYSURF, gameMap[i][j].color, (i * screen_width / map_x, j * screen_width / map_x, screen_width / map_x - 2, screen_height / map_y - 2))
-				
+
 				# Rect
 				# first number = top left rectangle x coordinate
 				# second number = top left rectangle y coordinate
