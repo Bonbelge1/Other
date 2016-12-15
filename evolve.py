@@ -24,14 +24,17 @@ class Being:
 # Class for ground tiles
 class Tiles:
 	def __init__(self):
-		self.color = (0, 255, 0)
-		self.food = 20
-		self.growing = 1
+		self.color = [0, 100, 0]
+		self.growing = 0.05
 
 # Function for self-reproduction
 def repro(listBeing):
 	for i in range(len(listBeing)):
 		print(listBeing[i].weight)
+
+def zoneMap(position, map_x, map_y, screen_width, screen_height):
+	return [int(position[0] * map_x / screen_width), int(position[1] * map_y / screen_height)]
+
    
 def main():
 	
@@ -48,7 +51,7 @@ def main():
 	# Creation of the map
 	map_x = 10
 	map_y = 10
-	gameMap = [[Tiles() for j in range(map_x)] for i in range(map_y)]
+	gameMap = [[Tiles() for j in range(map_y)] for i in range(map_x)]
 
 	# Creation of the window
 	pygame.init()
@@ -66,12 +69,16 @@ def main():
 		# Draw Tiles
 		for i in range(map_y):
 			for j in range(map_x):
+				if gameMap[i][j].color[1] < 200:
+					food = gameMap[i][j].color[1] * gameMap[i][j].growing
+					gameMap[i][j].color[1] += int(food)
+				
 				pygame.draw.rect(DISPLAYSURF, gameMap[i][j].color, (i * screen_width / map_x, j * screen_width / map_x, screen_width / map_x - 2, screen_height / map_y - 2))
 
 				# Rect
 				# first number = top left rectangle x coordinate
 				# second number = top left rectangle y coordinate
-				# third number = width of rectangle
+				# third number = width of rectangle10
 				# fourth number = length of rectangle
 		
 		
@@ -80,7 +87,7 @@ def main():
 		# Draw Being
 		for i in range(len(gen)):
 			posTemp = (int(gen[i].pos[0]), int(gen[i].pos[1]))
-			pygame.draw.circle(DISPLAYSURF, gen[i].color, posTemp, gen[i].weight)
+			pygame.draw.circle(DISPLAYSURF, gen[i].color, posTemp, int(gen[i].weight ** (2/3)))
 			
 			# Horizontal border verification (x) 
 			if not (gen[i].weight <= int(gen[i].pos[0] + gen[i].speed * math.cos(math.radians(gen[i].theta))) <= screen_width - gen[i].weight):
@@ -92,8 +99,25 @@ def main():
 
 			# Calculate new position
 			gen[i].pos = (gen[i].pos[0] + gen[i].speed * math.cos(math.radians(gen[i].theta)), gen[i].pos[1] + gen[i].speed * math.sin(math.radians(gen[i].theta)))
+			
+			# Calculate weight
+			gps = zoneMap(gen[i].pos, map_x, map_y, screen_width, screen_height)
+			eat = 0.01 * gameMap[gps[0]][gps[1]].color[1]
+			gameMap[gps[0]][gps[1]].color[1] -= eat * gen[i].weight * 0.1
+			gen[i].weight = gen[i].weight - gen[i].speed**(1/3) + eat**(1/3)
+
+			if gen[i].weight <= 0:
+				del gen[i]
+				print(len(gen))
+				break
+
+			
+
+
 		
-		# Update the window
+
+
+		# Update the window(gen[i].pos)]
 		pygame.display.flip()
 		DISPLAYSURF.fill(BLACK)
 
