@@ -20,6 +20,7 @@ class Being:
 		self.speed = random.uniform(0, 2)
 		self.theta = random.randrange(0, 360)
 		self.ratio = random.uniform(0, 1)
+		self.eatSpeed = random.uniform(0.01, 0.05)
 		#Being.beingCreated += 1
 
 # Class for ground tiles
@@ -36,7 +37,7 @@ def repro(listBeing):
 def zoneMap(position, map_x, map_y, screen_width, screen_height):
 	return [int(position[0] * map_x / screen_width), int(position[1] * map_y / screen_height)]
 
-# Calculate radius for a Being weigth
+# Calculate radius for a Being weight
 def weightToR(weight):
 	#return (weight / math.pi)**(1/2)
 	return (weight)**(2/3)
@@ -44,6 +45,18 @@ def weightToR(weight):
 # Normal distribution function
 def NFunction(x, mu, theta2):
 	return (1 / (2 * theta2 * math.pi)) * math.e**-((x-mu)**2 / (2*theta2))
+
+# Simple reproduction function
+def repro(parent):
+	children = Being()
+	children.color = parent.color
+	children.pos = parent.pos
+	children.speed = parent.speed
+	children.reproLimit = parent.reproLimit
+	children.eatSpeed = parent.eatSpeed
+	children.weight = int((1 - parent.ratio) * parent.weight)
+	return children
+	
 
 # Print stats for a Being
 def printStats(gen, i):
@@ -82,11 +95,13 @@ def main():
 
 	# Creation of the first generation
 	gen = [Being() for i in range(10)]
+	newGen = []
+	lastPop = 0
 
 	# Surface
 	DISPLAYSURF = pygame.display.set_mode()
 
-	# Infinite loop
+	# Infinite loop recursivly
 	while True:
 		
 		# Draw Tiles
@@ -95,7 +110,7 @@ def main():
 
 				# Food generation
 				#if gameMap[i][j].color[1] <= 110:
-					gameMap[i][j].color[1] += 50 * NFunction(gameMap[i][j].color[1] / 10, 5, 4)
+					gameMap[i][j].color[1] += 30 * NFunction(gameMap[i][j].color[1] / 10, 5, 4)
 					tempColorTile = [gameMap[i][j].color[0], int(gameMap[i][j].color[1]), gameMap[i][j].color[2]]
 					pygame.draw.rect(DISPLAYSURF, tempColorTile, (i * screen_width / map_x, j * screen_width / map_x, screen_width / map_x - 1, screen_height / map_y - 1))
 					
@@ -104,11 +119,11 @@ def main():
 			posTemp = (int(gen[i].pos[0]), int(gen[i].pos[1]))
 			pygame.draw.circle(DISPLAYSURF, gen[i].color, posTemp, int(weightToR(gen[i].weight)))
 			
-			# Horizontal border verification (x) 
+			# Horizontal border verification 
 			if not (weightToR(gen[i].weight) <= int(gen[i].pos[0] + gen[i].speed * math.cos(math.radians(gen[i].theta))) <= screen_width - weightToR(gen[i].weight)):
 				gen[i].theta = 180 - gen[i].theta
 			
-			# Vertical border verification (y)
+			# Vertical border verification
 			if not (weightToR(gen[i].weight) <= int(gen[i].pos[1] + gen[i].speed * math.sin(math.radians(gen[i].theta))) <= screen_height - weightToR(gen[i].weight)):
 				gen[i].theta = 360 - gen[i].theta
 
@@ -116,45 +131,40 @@ def main():
 			gen[i].pos = (gen[i].pos[0] + gen[i].speed * math.cos(math.radians(gen[i].theta)), gen[i].pos[1] + gen[i].speed * math.sin(math.radians(gen[i].theta)))
 			gps = zoneMap(gen[i].pos, map_x, map_y, screen_width, screen_height)
 
-			# Calculate weight Being
+			# The Biggest Winner
 			metabolism = 0.1 * gen[i].weight + gen[i].speed
-			eat = gameMap[gps[0]][gps[1]].color[1] * 0.04
+			eat = gameMap[gps[0]][gps[1]].color[1] * gen[i].eatSpeed
 			gen[i].weight += (eat - metabolism)
 
-			# Harvest food Tile
+			# Let's harvest food
 			gameMap[gps[0]][gps[1]].color[1] -= eat
 
-			# Reproduction
+			# Reproduction (NSFW)
 			if gen[i].weight >= gen[i].reproLimit:
-				gen.insert(i + 1, Being())
-				gen[i + 1].color = gen[i].color
-				gen[i + 1].pos = gen[i].pos
-				gen[i + 1].speed = gen[i].speed
-				gen[i + 1].reproLimit = gen[i].reproLimit
-				gen[i + 1].weight = int((1 - gen[i].ratio) * gen[i].weight)
+				newGen.append(repro(gen[i]))
 				gen[i].weight *= gen[i].ratio
-				#printStats(gen, i)
-				#printStats(gen, i + 1)
-				#break
 			
-			# Clear corpses
-			if gen[i].weight <= 0:
-				del gen[i]
-				print(len(gen))
-				# if len(gen) == 0:
-				# 	gen = [Being() for i in range(1)]
-				break
 
-		# Update the window(gen[i].pos)]
+		# Update the window
 		pygame.display.flip()
 		DISPLAYSURF.fill(BLACK)
 
-		# Game clock
+		# Hide corpses
+		gen = [i for i in gen if i.weight > 0]
+		if len(gen) != lastPop:
+			print(len(gen))
+			lastPop = len(gen)
+
+		# Welcome newcomers to party
+		gen += newGen
+		newGen = []
+		
+		# Tic toc
 		pygame.time.delay(20) 
 	
 #-----------------------------------------------------------------------------------------------
 
-	# Keyboard events management				       
+	# Not working quit event				       
 	for event in pygame.event.get():
 		if (event.type == QUIT):
 			pygame.quit()
