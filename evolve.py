@@ -28,11 +28,6 @@ class Tiles:
 	def __init__(self):
 		self.color = [0, 100, 0]
 
-# Function for self-reproduction
-def repro(listBeing):
-	for i in range(len(listBeing)):
-		print(listBeing[i].weight)
-
 # Function returning tile coordinate where a Being is 
 def zoneMap(position, map_x, map_y, screen_width, screen_height):
 	return [int(position[0] * map_x / screen_width), int(position[1] * map_y / screen_height)]
@@ -112,7 +107,7 @@ def main():
 				#if gameMap[i][j].color[1] <= 110:
 					gameMap[i][j].color[1] += 30 * NFunction(gameMap[i][j].color[1] / 10, 5, 4)
 					tempColorTile = [gameMap[i][j].color[0], int(gameMap[i][j].color[1]), gameMap[i][j].color[2]]
-					pygame.draw.rect(DISPLAYSURF, tempColorTile, (i * screen_width / map_x, j * screen_width / map_x, screen_width / map_x - 1, screen_height / map_y - 1))
+					pygame.draw.rect(DISPLAYSURF, tempColorTile, (i * screen_width / map_x, j * screen_width / map_x, screen_width / map_x - 0, screen_height / map_y - 0))
 					
 		# Draw Being
 		for i in range(len(gen)):
